@@ -48,9 +48,65 @@ export class ExtensionState {
       }
       case 'apiKey':
         return auth.apiKeyHeader && auth.apiKeyValue ? { [auth.apiKeyHeader]: auth.apiKeyValue } : {};
+      case 'oauth2':
+        return auth.oauthAccessToken ? { Authorization: `Bearer ${auth.oauthAccessToken}` } : {};
       default:
         return {};
     }
+  }
+
+  /**
+   * Like getAuthHeaders, but refreshes the OAuth token first when it is
+   * missing or within 30s of expiry, so sends never go out with a dead token.
+   */
+  async getFreshAuthHeaders(): Promise<Record<string, string>> {
+    const auth = this.getAuth();
+    if (auth.type === 'oauth2' && auth.oauthTokenUrl) {
+      const stale =
+        !auth.oauthAccessToken ||
+        (auth.oauthExpiresAt > 0 && Date.now() > auth.oauthExpiresAt - 30_000);
+      if (stale) {
+        await this.refreshOAuthToken();
+      }
+    }
+    return this.getAuthHeaders();
+  }
+
+  /** client_credentials grant; credentials are sent form-encoded in the body. */
+  async refreshOAuthToken(): Promise<{ expiresAt: number }> {
+    const auth = this.getAuth();
+    if (!auth.oauthTokenUrl || !auth.oauthClientId) {
+      throw new Error('OAuth token URL and client ID are required.');
+    }
+    const form = new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: auth.oauthClientId,
+      client_secret: auth.oauthClientSecret,
+    });
+    if (auth.oauthScope) {
+      form.set('scope', auth.oauthScope);
+    }
+    const response = await fetch(auth.oauthTokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form.toString(),
+    });
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(`Token endpoint returned ${response.status}: ${text.slice(0, 300)}`);
+    }
+    let json: { access_token?: string; expires_in?: number };
+    try {
+      json = JSON.parse(text);
+    } catch {
+      throw new Error('Token endpoint did not return JSON.');
+    }
+    if (!json.access_token) {
+      throw new Error('Token response had no access_token field.');
+    }
+    const expiresAt = json.expires_in ? Date.now() + json.expires_in * 1000 : 0;
+    await this.setAuth({ ...this.getAuth(), oauthAccessToken: json.access_token, oauthExpiresAt: expiresAt });
+    return { expiresAt };
   }
 
   // --- Templates (persisted as a JSON file in the workspace so they can be committed) ---

@@ -18,6 +18,33 @@ export function activate(context: vscode.ExtensionContext): void {
   // Initialise context key so the clear button shows/hides correctly on startup
   setHasEndpoints(state.getEndpoints().length > 0);
 
+  // Tutorial
+  context.subscriptions.push(
+    vscode.commands.registerCommand('endpointExplorer.openTutorial', () =>
+      vscode.commands.executeCommand(
+        'workbench.action.openWalkthrough',
+        'estraw1059.vs-endpoint-explorer#endpointExplorer.gettingStarted',
+        false,
+      ),
+    ),
+  );
+
+  // One-time welcome on first activation
+  const WELCOMED_KEY = 'endpointExplorer.welcomed';
+  if (!context.globalState.get(WELCOMED_KEY)) {
+    void context.globalState.update(WELCOMED_KEY, true);
+    void vscode.window
+      .showInformationMessage(
+        'Welcome to Endpoint Explorer! Set up auth once, analyze your repo with Claude, and call any endpoint it finds.',
+        'Open Tutorial',
+      )
+      .then((pick) => {
+        if (pick) {
+          void vscode.commands.executeCommand('endpointExplorer.openTutorial');
+        }
+      });
+  }
+
   // Views
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(AuthViewProvider.viewType, new AuthViewProvider(state)),

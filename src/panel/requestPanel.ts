@@ -95,13 +95,23 @@ export class RequestPanel {
   }
 
   private async sendRequest(payload: SendPayload): Promise<void> {
-    const headers: Record<string, string> = { ...this.state.getAuthHeaders() };
+    const started = Date.now();
+    let headers: Record<string, string>;
+    try {
+      headers = { ...(await this.state.getFreshAuthHeaders()) };
+    } catch (e) {
+      this.panel.webview.postMessage({
+        type: 'responseError',
+        error: `OAuth token refresh failed: ${e instanceof Error ? e.message : String(e)}`,
+        timeMs: Date.now() - started,
+      });
+      return;
+    }
     for (const h of payload.headers) {
       if (h.name.trim()) {
         headers[h.name.trim()] = h.value;
       }
     }
-    const started = Date.now();
     try {
       const response = await fetch(payload.url, {
         method: payload.method,

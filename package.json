@@ -98,6 +98,11 @@
         "title": "Clear Discovered Endpoints",
         "category": "Endpoint Explorer",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "endpointExplorer.openTutorial",
+        "title": "Open Tutorial",
+        "category": "Endpoint Explorer"
       }
     ],
     "menus": {
@@ -121,6 +126,47 @@
         }
       ]
     },
+    "walkthroughs": [
+      {
+        "id": "endpointExplorer.gettingStarted",
+        "title": "Get Started with Endpoint Explorer",
+        "description": "Discover the API endpoints in your repo with Claude and call them without leaving VS Code.",
+        "steps": [
+          {
+            "id": "configureAuth",
+            "title": "Set up authorization once",
+            "description": "Fill in the base URL and auth in the **Authorization** panel — it applies to every request.\n[Open Endpoint Explorer](command:endpointExplorer.auth.focus)",
+            "media": {
+              "markdown": "media/walkthrough/auth.md"
+            }
+          },
+          {
+            "id": "analyze",
+            "title": "Analyze your repo",
+            "description": "Claude scans the workspace and lists every API endpoint it defines.\n[Analyze Now](command:endpointExplorer.analyze)",
+            "media": {
+              "markdown": "media/walkthrough/analyze.md"
+            }
+          },
+          {
+            "id": "sendRequest",
+            "title": "Call an endpoint",
+            "description": "Click an endpoint to open a pre-filled, Postman-style request editor. Tweak and hit **Send**.",
+            "media": {
+              "markdown": "media/walkthrough/send.md"
+            }
+          },
+          {
+            "id": "saveTemplate",
+            "title": "Save templates",
+            "description": "Hit **Save** on any request to keep it as a named template — committable and shareable via `.endpoint-explorer/templates.json`.",
+            "media": {
+              "markdown": "media/walkthrough/templates.md"
+            }
+          }
+        ]
+      }
+    ],
     "viewsWelcome": [
       {
         "view": "endpointExplorer.endpoints",

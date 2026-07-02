@@ -31,7 +31,7 @@ export interface AnalysisResult {
   endpoints: EndpointInfo[];
 }
 
-export type AuthType = 'none' | 'bearer' | 'basic' | 'apiKey';
+export type AuthType = 'none' | 'bearer' | 'basic' | 'apiKey' | 'oauth2';
 
 export interface AuthConfig {
   type: AuthType;
@@ -41,6 +41,14 @@ export interface AuthConfig {
   basicPass: string;
   apiKeyHeader: string;
   apiKeyValue: string;
+  oauthTokenUrl: string;
+  oauthClientId: string;
+  oauthClientSecret: string;
+  oauthScope: string;
+  /** Cached token from the last client_credentials grant. */
+  oauthAccessToken: string;
+  /** Epoch ms when the cached token expires; 0 when unknown. */
+  oauthExpiresAt: number;
 }
 
 export const DEFAULT_AUTH: AuthConfig = {
@@ -51,6 +59,12 @@ export const DEFAULT_AUTH: AuthConfig = {
   basicPass: '',
   apiKeyHeader: 'X-API-Key',
   apiKeyValue: '',
+  oauthTokenUrl: '',
+  oauthClientId: '',
+  oauthClientSecret: '',
+  oauthScope: '',
+  oauthAccessToken: '',
+  oauthExpiresAt: 0,
 };
 
 /** The request state as edited in the panel — what gets saved as a template. */
