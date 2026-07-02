@@ -1,0 +1,176 @@
+{
+  "name": "vs-endpoint-explorer",
+  "displayName": "Endpoint Explorer",
+  "description": "Analyze your repo with Claude to discover API endpoints, then call them Postman-style from VS Code.",
+  "version": "0.0.1",
+  "publisher": "ericstraw",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericstraw/vs-endpoint-explorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ericstraw/vs-endpoint-explorer/issues"
+  },
+  "homepage": "https://github.com/ericstraw/vs-endpoint-explorer#readme",
+  "keywords": [
+    "api",
+    "endpoints",
+    "rest",
+    "http client",
+    "postman",
+    "claude"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "Testing"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "endpointExplorer",
+          "title": "Endpoint Explorer",
+          "icon": "$(radio-tower)"
+        }
+      ]
+    },
+    "views": {
+      "endpointExplorer": [
+        {
+          "id": "endpointExplorer.auth",
+          "type": "webview",
+          "name": "Authorization",
+          "icon": "$(key)"
+        },
+        {
+          "id": "endpointExplorer.endpoints",
+          "name": "Endpoints",
+          "icon": "$(list-tree)"
+        },
+        {
+          "id": "endpointExplorer.templates",
+          "name": "Saved Templates",
+          "icon": "$(save)"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "endpointExplorer.analyze",
+        "title": "Analyze Repo for Endpoints",
+        "category": "Endpoint Explorer",
+        "icon": "$(search-fuzzy)"
+      },
+      {
+        "command": "endpointExplorer.openEndpoint",
+        "title": "Open Endpoint",
+        "category": "Endpoint Explorer"
+      },
+      {
+        "command": "endpointExplorer.setApiKey",
+        "title": "Set Anthropic API Key",
+        "category": "Endpoint Explorer"
+      },
+      {
+        "command": "endpointExplorer.clearApiKey",
+        "title": "Clear Anthropic API Key",
+        "category": "Endpoint Explorer"
+      },
+      {
+        "command": "endpointExplorer.openTemplate",
+        "title": "Open Template",
+        "category": "Endpoint Explorer"
+      },
+      {
+        "command": "endpointExplorer.deleteTemplate",
+        "title": "Delete Template",
+        "category": "Endpoint Explorer",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "endpointExplorer.clearEndpoints",
+        "title": "Clear Discovered Endpoints",
+        "category": "Endpoint Explorer",
+        "icon": "$(clear-all)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "endpointExplorer.analyze",
+          "when": "view == endpointExplorer.endpoints",
+          "group": "navigation"
+        },
+        {
+          "command": "endpointExplorer.clearEndpoints",
+          "when": "view == endpointExplorer.endpoints && endpointExplorer.hasEndpoints",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "endpointExplorer.deleteTemplate",
+          "when": "view == endpointExplorer.templates && viewItem == template",
+          "group": "inline"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "endpointExplorer.endpoints",
+        "contents": "No endpoints discovered yet.\n[$(search-fuzzy) Analyze Repo](command:endpointExplorer.analyze)\nMake sure to set your base URL and auth in the Authorization panel first."
+      }
+    ],
+    "configuration": {
+      "title": "Endpoint Explorer",
+      "properties": {
+        "endpointExplorer.provider": {
+          "type": "string",
+          "enum": [
+            "api",
+            "claude-cli"
+          ],
+          "enumDescriptions": [
+            "Call the Claude API directly with an Anthropic API key (billed per token).",
+            "Shell out to the installed `claude` CLI, using your existing Claude Code login."
+          ],
+          "default": "api",
+          "description": "How the extension calls Claude to analyze the repo."
+        },
+        "endpointExplorer.model": {
+          "type": "string",
+          "default": "claude-opus-4-8",
+          "description": "Claude model used for repo analysis (API provider only)."
+        },
+        "endpointExplorer.cliPath": {
+          "type": "string",
+          "default": "claude",
+          "description": "Path to the Claude Code CLI binary (claude-cli provider only)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "npm run compile -- --production",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.109.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}
