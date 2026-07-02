@@ -31,6 +31,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // One-time welcome on first activation
   const WELCOMED_KEY = 'endpointExplorer.welcomed';
+  context.subscriptions.push(
+    vscode.commands.registerCommand('endpointExplorer.resetWelcome', async () => {
+      await context.globalState.update(WELCOMED_KEY, undefined);
+      vscode.window.showInformationMessage(
+        'Endpoint Explorer: welcome reset — it will show the next time the extension activates (reload the window).',
+      );
+    }),
+  );
   if (!context.globalState.get(WELCOMED_KEY)) {
     void context.globalState.update(WELCOMED_KEY, true);
     void vscode.window

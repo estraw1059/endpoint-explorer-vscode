@@ -109,6 +109,11 @@
         "title": "Settings",
         "category": "Endpoint Explorer",
         "icon": "$(gear)"
+      },
+      {
+        "command": "endpointExplorer.resetWelcome",
+        "title": "Reset Welcome Message",
+        "category": "Endpoint Explorer"
       }
     ],
     "menus": {
