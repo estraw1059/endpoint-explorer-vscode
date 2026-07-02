@@ -103,6 +103,12 @@
         "command": "endpointExplorer.openTutorial",
         "title": "Open Tutorial",
         "category": "Endpoint Explorer"
+      },
+      {
+        "command": "endpointExplorer.openSettings",
+        "title": "Settings",
+        "category": "Endpoint Explorer",
+        "icon": "$(gear)"
       }
     ],
     "menus": {
@@ -116,6 +122,11 @@
           "command": "endpointExplorer.clearEndpoints",
           "when": "view == endpointExplorer.endpoints && endpointExplorer.hasEndpoints",
           "group": "navigation"
+        },
+        {
+          "command": "endpointExplorer.openSettings",
+          "when": "view == endpointExplorer.endpoints",
+          "group": "navigation@9"
         }
       ],
       "view/item/context": [

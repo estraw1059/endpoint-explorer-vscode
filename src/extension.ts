@@ -107,6 +107,81 @@ export function activate(context: vscode.ExtensionContext): void {
     }),
   );
 
+  // Settings quick-pick (gear icon on the Endpoints view)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('endpointExplorer.openSettings', async () => {
+      const config = vscode.workspace.getConfiguration('endpointExplorer');
+      const provider = config.get<string>('provider', 'api');
+      const hasKey = !!(await context.secrets.get(API_KEY_SECRET));
+
+      const pick = await vscode.window.showQuickPick(
+        [
+          {
+            id: 'provider',
+            label: '$(arrow-swap) Claude Provider',
+            description: provider === 'claude-cli' ? 'Claude Code CLI' : 'Anthropic API',
+            detail: 'Switch between the Anthropic API and the Claude Code CLI for repo analysis.',
+          },
+          {
+            id: 'setKey',
+            label: '$(key) Set Anthropic API Key…',
+            description: hasKey ? 'a key is saved' : 'no key saved',
+            detail: 'Stored securely in VS Code SecretStorage. Used by the API provider only.',
+          },
+          {
+            id: 'clearKey',
+            label: '$(trash) Clear Anthropic API Key',
+          },
+          {
+            id: 'all',
+            label: '$(settings-gear) All Endpoint Explorer Settings…',
+            detail: 'Model, CLI path, and everything else in the Settings UI.',
+          },
+        ],
+        { title: 'Endpoint Explorer Settings' },
+      );
+
+      switch (pick?.id) {
+        case 'provider': {
+          const choice = await vscode.window.showQuickPick(
+            [
+              {
+                id: 'api',
+                label: 'Anthropic API',
+                description: provider === 'api' ? 'current' : undefined,
+                detail: 'Direct API calls with your Anthropic API key. Billed per token.',
+              },
+              {
+                id: 'claude-cli',
+                label: 'Claude Code CLI',
+                description: provider === 'claude-cli' ? 'current' : undefined,
+                detail: 'Uses your installed claude CLI and existing Claude Code login. No API key needed.',
+              },
+            ],
+            { title: 'Claude Provider for Repo Analysis' },
+          );
+          if (choice && choice.id !== provider) {
+            await config.update('provider', choice.id, vscode.ConfigurationTarget.Global);
+            vscode.window.showInformationMessage(`Endpoint Explorer: provider set to ${choice.label}.`);
+          }
+          break;
+        }
+        case 'setKey':
+          await vscode.commands.executeCommand('endpointExplorer.setApiKey');
+          break;
+        case 'clearKey':
+          await vscode.commands.executeCommand('endpointExplorer.clearApiKey');
+          break;
+        case 'all':
+          await vscode.commands.executeCommand(
+            'workbench.action.openSettings',
+            '@ext:estraw1059.vs-endpoint-explorer',
+          );
+          break;
+      }
+    }),
+  );
+
   // API key management
   context.subscriptions.push(
     vscode.commands.registerCommand('endpointExplorer.setApiKey', async () => {
