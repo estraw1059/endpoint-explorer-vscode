@@ -22,7 +22,7 @@ Set `endpointExplorer.provider` in settings:
 
 Not yet on the marketplace. Until then, install from a `.vsix`:
 
-1. Grab the latest `.vsix` from the [Releases page](https://github.com/ericstraw/vs-endpoint-explorer/releases) (or build one yourself with `npm install && npm run package`).
+1. Grab the latest `.vsix` from the [Releases page](https://github.com/estraw1059/endpoint-explorer-vscode/releases) (or build one yourself with `npm install && npm run package`).
 2. In VS Code: **Extensions** view → `…` menu → **Install from VSIX…**, or from a terminal:
 
    ```sh

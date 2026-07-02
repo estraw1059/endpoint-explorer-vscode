@@ -3,16 +3,16 @@
   "displayName": "Endpoint Explorer",
   "description": "Analyze your repo with Claude to discover API endpoints, then call them Postman-style from VS Code.",
   "version": "0.0.1",
-  "publisher": "ericstraw",
+  "publisher": "estraw1059",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ericstraw/vs-endpoint-explorer.git"
+    "url": "https://github.com/estraw1059/endpoint-explorer-vscode.git"
   },
   "bugs": {
-    "url": "https://github.com/ericstraw/vs-endpoint-explorer/issues"
+    "url": "https://github.com/estraw1059/endpoint-explorer-vscode/issues"
   },
-  "homepage": "https://github.com/ericstraw/vs-endpoint-explorer#readme",
+  "homepage": "https://github.com/estraw1059/endpoint-explorer-vscode#readme",
   "keywords": [
     "api",
     "endpoints",
